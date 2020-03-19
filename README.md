@@ -18,7 +18,7 @@ Table of Contents
 
 ### Concept
 
-![fig-a](fig-a.jpg) ![fig-b](fig-b.jpg)
+![fig-a](images/fig-a.jpg)
 
 For our project we intend to program a robotic race car that can autonomously navigate a racetrack.
 We plan for the track lane to be defined by a high contrast inner and outer edge, either visually
@@ -29,7 +29,7 @@ The car is equipped with a camera in order to see the track, and it will be prog
 which side of the track is the outer and inner edge, along with what it means to complete a lap on
 said track.
 
-![fig-c](fig-c.jpg)
+![fig-b](images/fig-b.jpg)
 
 ### Execution
 
@@ -39,12 +39,12 @@ is able to navigate a more complex track configuration. If all goes well, we int
 machine learning and a set of heuristics to aid the robot in pushing the boundaries of navigation
 in order to accomplish faster lap times until an optimal is reached.
 
-![fig-d](fig-d.jpg) ![fig-e](fig-e.jpg)
+![fig-c](images/fig-c.jpg)
 
 ### Equipment
 
 - The race car is built upon a hobbyist remote control car chassis, specifically a [Horizon Hobby 
-  ECX Torment 1/18](Horizon Hobby ECX Torment 1/18).
+  ECX Torment](Horizon Hobby ECX Torment 1/18).
 - Upon the chassis is an [Arduino Uno](https://www.arduino.cc/en/Guide/ArduinoUno) and a [Raspberry 
   Pi 3 Model B](https://www.raspberrypi.org/products/raspberry-pi-3-model-b/).
 - The motor is powered by a 7.2V LiPo battery and is controlled by a [Cytron 10A DC Motor Driver
