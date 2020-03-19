@@ -18,7 +18,7 @@ Table of Contents
 
 ### Concept
 
-![fig-a](images/fig-a.jpg)
+![fig-a](../images/fig-a.jpg)
 
 For our project we intend to program a robotic race car that can autonomously navigate a racetrack.
 We plan for the track lane to be defined by a high contrast inner and outer edge, either visually
