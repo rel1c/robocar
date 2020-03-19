@@ -41,8 +41,8 @@ in order to accomplish faster lap times until an optimal is reached.
 
 ### Equipment
 
-- The race car is built upon a hobbyist remote control car chassis, specifically a [Horizon Hobby ECX Torment](
-  Horizon Hobby ECX Torment 1/18).
+- The race car is built upon a hobbyist remote control car chassis, specifically a
+  [Horizon Hobby ECX Torment](Horizon Hobby ECX Torment 1/18).
 - Upon the chassis is an [Arduino Uno](https://www.arduino.cc/en/Guide/ArduinoUno) and a [Raspberry 
   Pi 3 Model B](https://www.raspberrypi.org/products/raspberry-pi-3-model-b/).
 - The motor is powered by a 7.2V LiPo battery and is controlled by a [Cytron 10A DC Motor Driver
