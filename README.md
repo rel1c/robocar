@@ -18,8 +18,6 @@ Table of Contents
 
 ### Concept
 
-![fig_a](images/fig_a.png)
-
 For our project we intend to program a robotic race car that can autonomously navigate a racetrack.
 We plan for the track lane to be defined by a high contrast inner and outer edge, either visually
 or physically constructed. The track will not be statically designed, but instead able to be
@@ -29,7 +27,7 @@ The car is equipped with a camera in order to see the track, and it will be prog
 which side of the track is the outer and inner edge, along with what it means to complete a lap on
 said track.
 
-![fig_b](images/fig_b.png)
+![fig_a](images/fig_a.png) ![fig_b](images/fig_b.png)
 
 ### Execution
 
