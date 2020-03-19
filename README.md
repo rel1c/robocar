@@ -18,7 +18,7 @@ Table of Contents
 
 ### Concept
 
-![fig-a](images/fig-a.jpg)
+![fig-a](images/fig_a.png)
 
 For our project we intend to program a robotic race car that can autonomously navigate a racetrack.
 We plan for the track lane to be defined by a high contrast inner and outer edge, either visually
@@ -29,7 +29,7 @@ The car is equipped with a camera in order to see the track, and it will be prog
 which side of the track is the outer and inner edge, along with what it means to complete a lap on
 said track.
 
-![fig-b](images/fig-b.jpg)
+![fig-b](images/fig_b.png)
 
 ### Execution
 
@@ -39,7 +39,7 @@ is able to navigate a more complex track configuration. If all goes well, we int
 machine learning and a set of heuristics to aid the robot in pushing the boundaries of navigation
 in order to accomplish faster lap times until an optimal is reached.
 
-![fig-c](images/fig-c.jpg)
+![fig-c](images/fig_c.png)
 
 ### Equipment
 
