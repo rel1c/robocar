@@ -1,7 +1,5 @@
 # Spring 2020 CSci 5551 Robotic Car Project
 
----
-
 Autonomous racetrack-navigating robotic car project, designed and built for the University of
 Minnesota Spring 2020 CSci 5551 class.
 
