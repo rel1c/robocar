@@ -11,7 +11,7 @@
 #define PARAMETERS_H
 
 // Serial baud rate parameter
-#define BAUD_RATE
+#define BAUD_RATE 9600
 
 // Digital pin parameters
 #define MOTOR_PIN 10
@@ -19,16 +19,17 @@
 #define DIRECTION_PIN 8
 
 // Steering servo parameters
-#define STEERING_MIN 0
-#define STEERING_MAX 180
+#define STEERING_MIN 65
+#define STEERING_MAX 115
 #define STEERING_TRIM 0
 
-// Maximum PWM value for motor speed
+// PWM values for motor speed
 #define MOTOR_MAX 255
+#define MOTOR_MIN -255
 
 // If DEBUG is set to true, all sent messages will be relayed back
-#define DEBUG 0
+#define DEBUG false
 
 #endif /* PARAMETERS_H */
 
-/*** enf of file ***/
+/*** end of file ***/

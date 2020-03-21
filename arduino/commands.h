@@ -23,4 +23,4 @@ typedef enum Command Command;
 
 #endif /* COMMANDS_H */
 
-/*** enf of file ***/
+/*** end of file ***/
