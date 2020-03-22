@@ -14,14 +14,14 @@ Command read_command();
 
 void fill_buffer();
 
-void read_char();
+byte read_byte();
 
-void write_char();
+void write_byte();
 
 void write_command();
 
-void get_messages();
+void debug();
+
+void get_message();
 
 #endif /* CONTROLLER_H */
-
-/*** end of file ***/

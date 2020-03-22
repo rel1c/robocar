@@ -16,6 +16,7 @@
 #define DIRECTION_PIN 8
 
 // Steering servo parameters
+#define STEERING_MID 90
 #define STEERING_MIN 65
 #define STEERING_MAX 115
 #define STEERING_TRIM 0
@@ -28,5 +29,3 @@
 #define DEBUG true
 
 #endif /* PARAMETERS_H */
-
-/*** end of file ***/
