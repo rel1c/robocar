@@ -1,9 +1,7 @@
-/** @file parameters.h
- *
- * @brief A collection of predefined constants regarding minimum and maximum motor values, serial
- *        baud rate and digital pins.
- *
- * COPYRIGHT NOTICE: (c) 2020 Adam Peterson. All rights reserved.
+/* File: parameters.h
+ * Desc: A collection of predefined constants regarding minimum and maximum motor values, serial
+ *       baud rate and digital pins.
+ * Copyright (c) 2020 Adam Peterson - All rights reserved
 */
 
 #ifndef PARAMETERS_H
@@ -27,7 +25,7 @@
 #define MOTOR_MIN -255
 
 // If DEBUG is set to true, all sent messages will be relayed back
-#define DEBUG false
+#define DEBUG true
 
 #endif /* PARAMETERS_H */
 

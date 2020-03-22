@@ -1,8 +1,6 @@
-/** @file commands.h
- *
- * @brief Enumerated type definition for the purposes of remote car control.
- *
- * COPYRIGHT NOTICE: (c) 2020 Adam Peterson. All rights reserved.
+/* File: commands.h
+ * Desc: Enumerated type definition for the purposes of remote car control.
+ * Copyright (c) 2020 Adam Peterson - All rights reserved
 */
 
 #ifndef COMMANDS_H
