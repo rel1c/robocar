@@ -3,7 +3,6 @@
  * @brief A collection of predefined constants regarding minimum and maximum motor values, serial
  *        baud rate and digital pins.
  *
- * @par
  * COPYRIGHT NOTICE: (c) 2020 Adam Peterson. All rights reserved.
 */
 

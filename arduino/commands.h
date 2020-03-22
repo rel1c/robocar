@@ -2,7 +2,6 @@
  *
  * @brief Enumerated type definition for the purposes of remote car control.
  *
- * @par
  * COPYRIGHT NOTICE: (c) 2020 Adam Peterson. All rights reserved.
 */
 
