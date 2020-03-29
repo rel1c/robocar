@@ -2,6 +2,8 @@
 # Desc: Serial command parser for executing car commands via the terminal.
 # Copyright (c) 2020 Adam Peterson - All rights reserved
 
+# TODO get strings and integers straight, only use strings where needed
+
 import serial
 
 # Constants
@@ -78,6 +80,7 @@ def read_serial():
     if command is 'MOTOR' or command is 'STEER' or command is 'STOP':
       value = read_value()
       print('Received value: ', value)
+    n = n - 1
 
 def main():
   while(True):
