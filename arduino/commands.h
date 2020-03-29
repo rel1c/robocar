@@ -6,7 +6,7 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
-enum byte : Command {
+enum : Command {
   ERROR = 0,  // Error flag; sent when there is a problem with messages.
   HELLO = 1,  // Sent to initialize communications between Arduino and computer.
   MOTOR = 2,  // Sent to signal a change in motor speed, followed by a value (-255, 255).

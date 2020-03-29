@@ -26,7 +26,7 @@ void setup() {
   while(!connected) {
     write_command(HELLO);
     fill_buffer(1, 1000);
-    get_messages();
+    get_message();
   }
 }
 
@@ -38,7 +38,7 @@ void loop() {
 
 
 void execute_command() {
-  servo.write(constrain(steer, STEERING_MIN, STEERING_MAX);
+  servo.write(constrain(steer, STEERING_MIN, STEERING_MAX));
   motor = constrain(motor, MOTOR_MIN, MOTOR_MAX);
   if (motor < 0) {
     digitalWrite(DIRECTION_PIN, LOW);
