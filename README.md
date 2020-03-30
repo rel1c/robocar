@@ -10,7 +10,7 @@ Table of Contents
 - [Execution](#execution)
 - [Equipment](#equipment)
 - [Progress](#progress)
-- [Challenges](#challenges)
+- [Challenges](https://github.com/rel1c/robocar/blob/master/challenges.md)
 - [FAQ](#faq)
 - [License](#license)
 
