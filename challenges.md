@@ -1,7 +1,5 @@
 # Open Challenges
 
----
-
 ### Control
 
 - Communication between Arduino running motor control and the Pi running ROS.
