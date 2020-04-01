@@ -11,7 +11,7 @@ enum Command {
   OVER = 2,     // Sent to signal that a message was received and executed.
   MOTOR = 3,    // Sent to signal a change in motor speed.
   STEER = 4,    // Sent to signal a change in steering direction.
-  REVERSE = 5   // Sent to signal a change in motor direction.
+  REVERSE = 5,  // Sent to signal a change in motor direction.
   ERROR = 6     // Sent to signal an error.
 };
 

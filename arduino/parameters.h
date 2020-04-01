@@ -23,9 +23,6 @@
 
 // PWM values for motor speed
 #define MOTOR_MAX 255
-#define MOTOR_MIN 25
-
-// If DEBUG is set to true, all sent messages will be relayed back
-#define DEBUG true
+#define MOTOR_MIN 0 //25 is real min
 
 #endif /* PARAMETERS_H */

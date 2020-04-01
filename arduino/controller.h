@@ -20,8 +20,6 @@ void write_byte();
 
 void write_command();
 
-void debug();
-
 void get_message();
 
 #endif /* CONTROLLER_H */
