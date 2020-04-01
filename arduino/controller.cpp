@@ -14,6 +14,7 @@
 bool connected = false;
 byte motor = 0;
 byte steer = STEERING_MID;
+byte reverse = 0;
 Servo servo;
 
 void setup() {
@@ -41,11 +42,11 @@ void loop() {
 void execute_command() {
   steer = constrain(steer, STEERING_MIN, STEERING_MAX);
   motor = constrain(motor, MOTOR_MIN, MOTOR_MAX);
-  if (motor < 0) {
-    digitalWrite(DIRECTION_PIN, LOW);
+  if (reverse) {
+    digitalWrite(DIRECTION_PIN, HIGH);
   }
   else {
-    digitalWrite(DIRECTION_PIN, HIGH);
+    digitalWrite(DIRECTION_PIN, LOW);
   }
   servo.write(steer);
   analogWrite(MOTOR_PIN, motor);
@@ -82,33 +83,30 @@ void write_command(Command c) {
 void get_message() {
   if (Serial.available() > 0) {
     Command command = read_command();
-    if (command == HELLO) {
-      if (!connected) {
+    if (!connected) {
+      if(command == HELLO) {
         connected = true;
-        write_command(HELLO);
       }
-      else {
-        write_command(CONNECTED);
-      }
-    }
-    else if (command == CONNECTED) {
-      connected = true;
     }
     else {
       switch(command) {
+        case HELLO:
+          // Fall through
+        case OVER:
+          break;
         case MOTOR:
           motor = read_byte();
           break;
         case STEER:
           steer = read_byte();
           break;
-        case STOP:
-          motor = 0;
+        case REVERSE:
+          reverse = read_byte();
           break;
         default:
           write_command(ERROR);
       } // End of switch
     } // End of connected
-  write_command(OVER);  
+    write_command(OVER);  
   } // End of Serial.available
 }

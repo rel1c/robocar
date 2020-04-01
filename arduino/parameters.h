@@ -1,7 +1,7 @@
 /* File: parameters.h
  * Desc: A collection of predefined constants regarding minimum and maximum motor values, serial
  *       baud rate and digital pins.
- * Copyright (c) 2020 Adam Peterson - All rights reserved
+ * Copyright (c) 2020 Adam Peterson
 */
 
 #ifndef PARAMETERS_H

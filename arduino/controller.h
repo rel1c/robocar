@@ -1,6 +1,6 @@
 /* File: controller.h
  * Desc: Interface for car movement and message handling.
- * Copyright (c) 2020 Adam Peterson - All rights reserved
+ * Copyright (c) 2020 Adam Peterson
 */
 
 #ifndef CONTROLLER_H
