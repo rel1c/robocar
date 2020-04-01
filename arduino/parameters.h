@@ -11,7 +11,7 @@
 #define BAUD_RATE 9600
 
 // Digital pin parameters
-#define MOTOR_PIN 10
+#define MOTOR_PIN 11
 #define STEERING_PIN 9
 #define DIRECTION_PIN 8
 
@@ -23,7 +23,7 @@
 
 // PWM values for motor speed
 #define MOTOR_MAX 255
-#define MOTOR_MIN -255
+#define MOTOR_MIN 25
 
 // If DEBUG is set to true, all sent messages will be relayed back
 #define DEBUG true
