@@ -49,6 +49,7 @@ in order to accomplish faster lap times until an optimal is reached.
   https://www.spektrumrc.com/Products/Default.aspx?ProdID=SPMS401) that came stock with the car.
 - Computer power is supplied by a [Jackery Titan](https://www.jackery.com/), an 18,000mAh external
   battery with USB connections.
+- The camera is an [Arducam 5MP Mini Camera](https://www.arducam.com/product/arducam-ov5647-standard-raspberry-pi-camera-b0033/).
 
 ### Progress
 
