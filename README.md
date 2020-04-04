@@ -54,7 +54,7 @@ in order to accomplish faster lap times until an optimal is reached.
 ### Progress
 
 - [x] Serial communication between the Arduino and the Pi.
-- [ ] Communication between the Pi and a PC.
+- [x] Communication between the Pi and a PC.
 - [ ] Manual control of the car over Wi-Fi.
 - [ ] Track identification from captured images.
 - [ ] Navigation of a simple oval track.
