@@ -1,7 +1,7 @@
 /* File: parameters.h
  * Desc: A collection of predefined constants regarding minimum and maximum motor values, serial
  *       baud rate and digital pins.
- * Copyright (c) 2020 Adam Peterson - All rights reserved
+ * Copyright (c) 2020 Adam Peterson
 */
 
 #ifndef PARAMETERS_H
@@ -11,7 +11,7 @@
 #define BAUD_RATE 9600
 
 // Digital pin parameters
-#define MOTOR_PIN 10
+#define MOTOR_PIN 11
 #define STEERING_PIN 9
 #define DIRECTION_PIN 8
 
@@ -23,9 +23,6 @@
 
 // PWM values for motor speed
 #define MOTOR_MAX 255
-#define MOTOR_MIN -255
-
-// If DEBUG is set to true, all sent messages will be relayed back
-#define DEBUG true
+#define MOTOR_MIN 0 //25 is real min
 
 #endif /* PARAMETERS_H */

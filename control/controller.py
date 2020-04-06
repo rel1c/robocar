@@ -2,7 +2,6 @@
 # Desc: Main controller module for the car.
 # Copyright (c) 2020 Adam Peterson - All rights reserved
 
-import atexit
 import serial
 import time
 from parameters import *

@@ -6,13 +6,15 @@
 #include <Arduino.h>
 #include <Servo.h>
 
-#include "commands.h"
-#include "controller.h"
-#include "parameters.h"
+#include <commands.h>
+#include <controller.h>
+#include <parameters.h>
 
+// Initial values for starting the car.
 bool connected = false;
 byte motor = 0;
 byte steer = STEERING_MID;
+byte reverse = 0;
 Servo servo;
 
 void setup() {
@@ -38,14 +40,15 @@ void loop() {
 
 
 void execute_command() {
-  servo.write(constrain(steer, STEERING_MIN, STEERING_MAX));
+  steer = constrain(steer, STEERING_MIN, STEERING_MAX);
   motor = constrain(motor, MOTOR_MIN, MOTOR_MAX);
-  if (motor < 0) {
-    digitalWrite(DIRECTION_PIN, LOW);
-  }
-  else {
+  if (reverse) {
     digitalWrite(DIRECTION_PIN, HIGH);
   }
+  else {
+    digitalWrite(DIRECTION_PIN, LOW);
+  }
+  servo.write(steer);
   analogWrite(MOTOR_PIN, motor);
 }
 
@@ -77,46 +80,33 @@ void write_command(Command c) {
 }
 
 
-void debug(Command c) {
-  write_command(c);
-  switch(c) {
-    case STOP:
-      //fall through
-    case MOTOR:
-      write_byte(motor);
-      break;
-    case STEER:
-      write_byte(steer);
-      break;
-  }
-}
-
-
 void get_message() {
   if (Serial.available() > 0) {
     Command command = read_command();
-    if (!connected && command == HELLO) {
-      connected = true;
+    if (!connected) {
+      if(command == HELLO) {
+        connected = true;
+      }
     }
     else {
       switch(command) {
+        case HELLO:
+          // Fall through
+        case OVER:
+          break;
         case MOTOR:
-          motor = read_byte;
+          motor = read_byte();
           break;
         case STEER:
-          steer = read_byte;
+          steer = read_byte();
           break;
-        case STOP:
-          motor = 0;
-          analogWrite(MOTOR_PIN, motor); // Milliseconds count!
+        case REVERSE:
+          reverse = read_byte();
           break;
         default:
           write_command(ERROR);
       } // End of switch
-      write_command(OVER);
-      if (DEBUG) {
-        debug(command);
-      }
     } // End of connected
+    write_command(OVER);  
   } // End of Serial.available
 }
