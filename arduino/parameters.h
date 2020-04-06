@@ -7,6 +7,9 @@
 #ifndef PARAMETERS_H
 #define PARAMETERS_H
 
+// Debug parameter
+#define DEBUG true
+
 // Serial baud rate parameter
 #define BAUD_RATE 9600
 
