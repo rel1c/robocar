@@ -13,7 +13,7 @@ SERIAL_PATH = '/dev/ttyACM0'
 
 # Init serial
 port = serial.Serial(SERIAL_PATH, BAUD_RATE)
-port.timeout = None
+port.timeout = 1
 port.flush()
 
 
@@ -24,7 +24,7 @@ def execute_commands(c, v):
     @param c: The Command object representing the command to be executed.
     @param v: The integer value.
     """
-    msg = [c, v]
+    msg = [c.value, v]
     write_serial(port, msg)
 
 
@@ -34,7 +34,7 @@ def execute_command(c):
   
     @param c: The Command object representing the command to be executed.
     """
-    write_serial(port, [c])
+    write_serial(port, [c.value])
 
 
 def motor(p):
@@ -47,7 +47,7 @@ def motor(p):
     speed = int(p * MOTOR_MAX)
     if speed < threshold:
         speed = 0
-    execute_commands(Command.MOTOR.value, speed)
+    execute_commands(Command.MOTOR, speed)
 
 
 def steer(a):
@@ -62,7 +62,7 @@ def steer(a):
         angle = STEERING_MAX
     else:
         angle = a
-    execute_commands(Command.STEER.value, angle)
+    execute_commands(Command.STEER, angle)
 
 
 def reverse(r):
@@ -76,12 +76,12 @@ def reverse(r):
     else:
         rev = 0
     stop()
-    execute_commands(Command.REVERSE.value, rev)
+    execute_commands(Command.REVERSE, rev)
 
 
 def stop():
     """Stops the motor."""
-    execute_commands(Command.MOTOR.value, 0)
+    execute_commands(Command.MOTOR, 0)
 
 
 def reset():
@@ -96,14 +96,12 @@ def demo():
             per = p / 100
             print(p, '%')
             motor(per)
-            time.sleep(0.25)
-            continue
+            time.sleep(0.25
         for p in range(100, 0, -10):
             per = p / 100
             print(p, '%')
             motor(per)
             time.sleep(0.25)
-            continue
 
     print('Running demo...')
     print('Steering at angle:')
@@ -111,12 +109,10 @@ def demo():
         print(a)
         steer(a)
         time.sleep(0.1)
-        continue
     for a in range(STEERING_MAX, STEERING_MIN, -1):
         print(a)
         steer(a)
         time.sleep(0.1)
-        continue
     print('Returning steering to center...')
     steer(90)
     print('Forward motor...')
@@ -131,23 +127,32 @@ def demo():
 
 def connect():
     """Attempts to establish serial connection with Arduino."""
+    found = False
     connected = False
+    # listen for handshake
     attempt = 0
-    while (not connected and attempt < 5):
-        print('Connecting...')
-        execute_command(Command.HELLO.value)
-        shake = read_byte(port)
-        if shake in [Command.HELLO.value, Command.OVER.value]:
-            connected = True
-            print('Connection Successful')
-        else:
-            time.sleep(1)
-            attempt += 1
-
+    while (not found and attempt < 5):
+      print('Listening for Arduino...')
+      incoming = read_command(port)
+      if incoming is Command.HELLO:
+        found = True
+        print('Arduino found.')
+      else:
+        time.sleep(1)
+        attempt += 1
+    while (found and not connected):
+      print('Connecting with Arduino...')
+      execute_command(Command.HELLO)
+      incoming = read_command(port)
+      if incoming is Command.OVER:
+        connected = True
+        print('Arduino connected.')
+      else:
+        time.sleep(1)
+        attempt += 1
     if not connected:
-        print('Connection Failed')
+      print('Unable to connect.')
     return connected
-
 
 def read_serial(s):
     """
