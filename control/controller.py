@@ -185,6 +185,7 @@ def main():
             if args[0] == 'cmds':
                 print(cmd_menu)
             elif args[0] == 'exit':
+                reset()
                 exit = True
         elif len(args) == 2:
             if args[0] == 'p':
