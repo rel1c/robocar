@@ -21,6 +21,9 @@ class Command(Enum):
     ERROR = 6  # Sent to signal an error.
 
     def __repr__(self):
+        return self.name + ':' + str(self.value)
+    
+    def __str__(self):
         return self.name
 
 
@@ -41,12 +44,14 @@ def read_command(s):
   
     @param s: Serial object to be read.
     @returns: Command object received from serial.
+    @throws: ValueError in case byte is not a Command value.
     """
-    b = read_bytes(s)
-    if b < 1 or b > 6:
-      return Command.ERROR
-    # else
-    return Command(b)
+    values = tuple(c.value for c in Command)
+    b = read_byte(s)
+    if b in values:
+      return Command(b)
+    else:
+      raise ValueError('Byte value (%d) read is not a Command.' % b)
 
 
 def write_serial(s, msg):
@@ -58,31 +63,3 @@ def write_serial(s, msg):
     """
     m = bytes(msg)
     s.write(m)
-
-
-def parse_command(c):
-    """
-    Parse a Command into a string.
-  
-    @param c: The Command object to be parsed.
-    @returns: A string representation of a Command.
-    """
-    try:
-        command = Command(c)
-        if command == Command.HELLO:
-            msg = 'HELLO'
-        elif command == Command.OVER:
-            msg = 'OVER'
-        elif command == Command.MOTOR:
-            msg = 'MOTOR'
-        elif command == Command.STEER:
-            msg = 'STEER'
-        elif command == Command.REVERSE:
-            msg = 'REVERSE'
-        elif command == Command.ERROR:
-            msg = 'ERROR'
-        else:
-            msg = ''
-    except Exception as e:
-        print('Error in parsing command:', e)
-    return msg

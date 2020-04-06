@@ -6,15 +6,14 @@ import serial
 import time
 import threading
 from parameters import *
-from control import Command, read_byte, read_command, write_serial, parse_command
+from control import Command, read_byte, read_command, write_serial
 
 # Constants
 SERIAL_PATH = '/dev/ttyACM0'
 
 # Init serial
 port = serial.Serial(SERIAL_PATH, BAUD_RATE)
-port.timeout = 1
-port.flush()
+port.timeout = None
 
 
 def execute_commands(c, v):
@@ -131,15 +130,14 @@ def connect():
     connected = False
     attempt = 0
     while (not found and attempt < 5):
-        print('Listening for Arduino...')
-        if (s.in_waiting() > 0):
-            incoming = read_command(port)
-            if incoming is Command.HELLO:
-                found = True
-                print('Arduino found.')
-            else:
-                time.sleep(1)
-                attempt += 1
+        print('Listening for Arduino... Attempt %d' % (attempt))
+        incoming = read_command(port)
+        if incoming is Command.HELLO:
+            found = True
+            print('Arduino found.')
+        else:
+            time.sleep(1)
+            attempt += 1
     while (found and not connected):
         print('Connecting with Arduino...')
         execute_command(Command.HELLO)
@@ -152,6 +150,8 @@ def connect():
             attempt += 1
     if not connected:
         print('Unable to connect.')
+    time.sleep(5) # arduino buffer too slow?
+    port.reset_input_buffer # clear handshake messages sitting in buffer
     return connected
 
 
@@ -161,10 +161,16 @@ def read_serial(s):
 
     @param s: Serial object to be read.
     """
-    while True:
-        command = read_command(port)
-        val = read_byte(port)
-        print('%s %d' % (command, val))
+    needs_val = (Command.MOTOR, Command.STEER, Command.REVERSE)
+    command = read_command(s)
+    while (command is not Command.OVER):
+        if DEBUG:
+            if command in needs_val:
+                val = read_bytes(s)
+                print('%s %d' % (command, val))
+            else:
+                print('%s' % (command))
+        command = read_command(s)
 
 
 def main():
@@ -181,7 +187,7 @@ def main():
     set steer angle --- a <val>
     reverse --- r <0/1>
     end session --- exit
-    print menu -- cmds
+    print menu --- cmds
     '''
     print(cmd_menu)
     exit = False
@@ -200,7 +206,6 @@ def main():
                 steer(int(args[1]))
             elif args[0] == 'r':
                 reverse(bool(args[1]))
-        # time.sleep(0.3)
 
 
 if __name__ == '__main__':
