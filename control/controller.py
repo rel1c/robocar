@@ -173,7 +173,7 @@ def main():
     cmd_menu = '''Commands: 
     set motor speed percent --- p <val>
     set steer angle --- a <val>
-    reverse --- r <val>
+    reverse --- r <0/1>
     end session --- exit
     print menu -- cmds
     '''
@@ -187,13 +187,12 @@ def main():
             elif args[0] == 'exit':
                 exit = True
         elif len(args) == 2:
-            args[1] = int(args[1])
             if args[0] == 'p':
-                motor(args[1])
+                motor(float(args[1]))
             elif args[0] == 'a':
-                steer(args[1])
+                steer(int(args[1]))
             elif args[0] == 'r':
-                reverse(args[1])
+                reverse(bool(args[1]))
         # time.sleep(0.3)
 
 
