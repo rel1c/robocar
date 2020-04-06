@@ -104,5 +104,5 @@ void get_command() {
       }  // End of switch
     }    // End of connected
     write_command(OVER);
-  }  // End of Serial.available
+  }   // End of Serial.available
 }
