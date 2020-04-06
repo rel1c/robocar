@@ -42,7 +42,11 @@ def read_command(s):
     @param s: Serial object to be read.
     @returns: Command object received from serial.
     """
-    return Command(read_byte(s))
+    b = read_bytes(s)
+    if b < 1 or b > 6:
+      return Command.ERROR
+    # else
+    return Command(b)
 
 
 def write_serial(s, msg):

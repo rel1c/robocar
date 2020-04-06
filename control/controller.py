@@ -96,7 +96,7 @@ def demo():
             per = p / 100
             print(p, '%')
             motor(per)
-            time.sleep(0.25
+            time.sleep(0.25)
         for p in range(100, 0, -10):
             per = p / 100
             print(p, '%')
@@ -124,21 +124,22 @@ def demo():
     reset()
     print('End of demo.')
 
+
 def connect():
     """Attempts to establish serial connection with Arduino."""
     found = False
     connected = False
-    # listen for handshake
     attempt = 0
     while (not found and attempt < 5):
         print('Listening for Arduino...')
-        incoming = read_command(port)
-        if incoming is Command.HELLO:
-            found = True
-            print('Arduino found.')
-        else:
-            time.sleep(1)
-            attempt += 1
+        if (s.in_waiting() > 0):
+            incoming = read_command(port)
+            if incoming is Command.HELLO:
+                found = True
+                print('Arduino found.')
+            else:
+                time.sleep(1)
+                attempt += 1
     while (found and not connected):
         print('Connecting with Arduino...')
         execute_command(Command.HELLO)
@@ -152,6 +153,7 @@ def connect():
     if not connected:
         print('Unable to connect.')
     return connected
+
 
 def read_serial(s):
     """
