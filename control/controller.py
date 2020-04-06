@@ -18,15 +18,32 @@ port.flush()
 
 
 def execute_commands(c, v):
+    """
+    Executes a control command with an associated value.
+  
+    @param c: The Command object representing the command to be executed.
+    @param v: The integer value.
+    """
+<<<<<<< HEAD
     msg = [c, v]
     write_serial(port, msg)
 
 
 def execute_command(c):
+    """
+    Executes a single control command.
+  
+    @param c: The Command object representing the command to be executed.
+    """
     write_serial(port, [c])
 
 
 def motor(p):
+    """
+    Sets the motor to a percentage (0.0, 1.0) of its maximum speed.
+  
+    @param p: A float representing the desired percentage.
+    """
     threshold = MOTOR_MIN
     speed = int(p * MOTOR_MAX)
     if speed < threshold:
@@ -35,6 +52,11 @@ def motor(p):
 
 
 def steer(a):
+    """
+    Sets the steering servo to a desired angle within its range.
+  
+    @param a: An integer represening the angle to be set.
+    """
     if a < STEERING_MIN:
         angle = STEERING_MIN
     elif a > STEERING_MAX:
@@ -45,6 +67,11 @@ def steer(a):
 
 
 def reverse(r):
+    """
+    Reverses the direction of the motor. Stops the motor before changing direction.
+  
+    @param r: A bool indicating the motor should reverse.
+    """
     if r:
         rev = 1
     else:
@@ -54,10 +81,12 @@ def reverse(r):
 
 
 def stop():
+    """Stops the motor."""
     execute_commands(Command.MOTOR.value, 0)
 
 
 def reset():
+    """Stops the motor and resets it to its center position."""
     steer(90)
     stop()
 
@@ -102,7 +131,7 @@ def demo():
 
 
 def connect():
-    # Establish connection
+    """Attempts to establish serial connection with Arduino."""
     connected = False
     attempt = 0
     while (not connected and attempt < 5):
@@ -121,7 +150,12 @@ def connect():
     return connected
 
 
-def read_serial(port):
+def read_serial(s):
+    """
+    Daemon thread function enabling non-blocking reads
+
+    @param s: Serial object to be read.
+    """
     while True:
         command = read_command(port)
         val = read_byte(port)
