@@ -126,32 +126,32 @@ def demo():
 
 def connect():
     """Attempts to establish serial connection with Arduino."""
-    found = False
     connected = False
     attempt = 0
-    while (not found and attempt < 5):
-        print('Listening for Arduino... Attempt %d' % (attempt))
-        incoming = read_command(port)
-        if incoming is Command.HELLO:
-            found = True
-            print('Arduino found.')
-        else:
-            time.sleep(1)
-            attempt += 1
-    while (found and not connected):
-        print('Connecting with Arduino...')
-        execute_command(Command.HELLO)
-        incoming = read_command(port)
-        if incoming is Command.OVER:
+    print('Connecting with Arduino...')
+    # See if we're already connected.
+    execute_command(Command.OVER)
+    shake = read_command(port)
+    if shake is Command.OVER:
+        connected = True
+        print('Already connected.')
+    # Otherwise, attempt to connect.
+    while (not connected and attempt < 5):
+        shake = read_command(port)
+        if shake is Command.HELLO:
+            execute_command(Command.HELLO)
+            print('...')
+        elif shake is Command.OVER:
             connected = True
-            print('Arduino connected.')
+            print('Connected!')
         else:
             time.sleep(1)
             attempt += 1
     if not connected:
         print('Unable to connect.')
-    time.sleep(5) # arduino buffer too slow?
-    port.reset_input_buffer # clear handshake messages sitting in buffer
+    # Delay and clear everything in the buffer.
+    time.sleep(5)
+    port.reset_input_buffer()
     return connected
 
 
@@ -171,16 +171,12 @@ def read_serial(s):
             else:
                 print('%s' % (command))
         command = read_command(s)
+    print('%s' % (command)) # delete me, for debugging
 
 
 def main():
     if not connect():
         return
-
-    # non blocking read loop in another thread
-    r_thread = threading.Thread(target=read_serial, args=(port, ))
-    r_thread.daemon = True
-    r_thread.start()
 
     cmd_menu = '''Commands: 
     set motor speed percent --- p <val>
@@ -191,7 +187,7 @@ def main():
     '''
     print(cmd_menu)
     exit = False
-    while not exit:
+    while not exit: #TODO Catch input errors, specifically ValueError for typos.
         args = input('Enter command: ').split()
         if len(args) == 1:
             if args[0] == 'cmds':
@@ -206,6 +202,7 @@ def main():
                 steer(int(args[1]))
             elif args[0] == 'r':
                 reverse(bool(args[1]))
+            read_serial(port)
 
 
 if __name__ == '__main__':
