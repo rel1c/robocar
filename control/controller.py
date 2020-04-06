@@ -24,7 +24,6 @@ def execute_commands(c, v):
     @param c: The Command object representing the command to be executed.
     @param v: The integer value.
     """
-<<<<<<< HEAD
     msg = [c, v]
     write_serial(port, msg)
 
