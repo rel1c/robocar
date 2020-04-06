@@ -187,6 +187,7 @@ def main():
             elif args[0] == 'exit':
                 exit = True
         elif len(args) == 2:
+            args[1] = int(args[1])
             if args[0] == 'p':
                 motor(args[1])
             elif args[0] == 'a':
