@@ -1,6 +1,6 @@
 # File: controller.py
 # Desc: Main controller module for the car.
-# Copyright (c) 2020 Adam Peterson - All rights reserved
+# Copyright (c) 2020 Adam Peterson
 
 import serial
 import time
