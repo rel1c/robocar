@@ -124,7 +124,6 @@ def demo():
     reset()
     print('End of demo.')
 
-
 def connect():
     """Attempts to establish serial connection with Arduino."""
     found = False
@@ -132,26 +131,26 @@ def connect():
     # listen for handshake
     attempt = 0
     while (not found and attempt < 5):
-      print('Listening for Arduino...')
-      incoming = read_command(port)
-      if incoming is Command.HELLO:
-        found = True
-        print('Arduino found.')
-      else:
-        time.sleep(1)
-        attempt += 1
+        print('Listening for Arduino...')
+        incoming = read_command(port)
+        if incoming is Command.HELLO:
+            found = True
+            print('Arduino found.')
+        else:
+            time.sleep(1)
+            attempt += 1
     while (found and not connected):
-      print('Connecting with Arduino...')
-      execute_command(Command.HELLO)
-      incoming = read_command(port)
-      if incoming is Command.OVER:
-        connected = True
-        print('Arduino connected.')
-      else:
-        time.sleep(1)
-        attempt += 1
+        print('Connecting with Arduino...')
+        execute_command(Command.HELLO)
+        incoming = read_command(port)
+        if incoming is Command.OVER:
+            connected = True
+            print('Arduino connected.')
+        else:
+            time.sleep(1)
+            attempt += 1
     if not connected:
-      print('Unable to connect.')
+        print('Unable to connect.')
     return connected
 
 def read_serial(s):
