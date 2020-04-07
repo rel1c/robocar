@@ -13,7 +13,11 @@ SERIAL_PATH = '/dev/ttyACM0'
 
 # Init serial
 port = serial.Serial(SERIAL_PATH, BAUD_RATE)
-port.timeout = None
+
+if DEBUG:
+  port.timeout = None
+else:
+  port.timeout = 1
 
 
 def execute_commands(c, v):
@@ -74,7 +78,6 @@ def reverse(r):
         rev = 1
     else:
         rev = 0
-    stop()
     execute_commands(Command.REVERSE, rev)
 
 
@@ -127,28 +130,17 @@ def demo():
 def connect():
     """Attempts to establish serial connection with Arduino."""
     connected = False
-    attempt = 0
     print('Connecting with Arduino...')
-    # See if we're already connected.
-    execute_command(Command.OVER)
-    shake = read_command(port)
-    if shake is Command.OVER:
-        connected = True
-        print('Already connected.')
-    # Otherwise, attempt to connect.
-    while (not connected and attempt < 5):
-        shake = read_command(port)
-        if shake is Command.HELLO:
+    while (not connected):
+        if(port.in_waiting > 0):
+            shake = read_command(port)
+            if shake is Command.OVER:
+                connected = True
+                print('Connected!')
+        else:
+            time.sleep(0.5)
             execute_command(Command.HELLO)
             print('...')
-        elif shake is Command.OVER:
-            connected = True
-            print('Connected!')
-        else:
-            time.sleep(1)
-            attempt += 1
-    if not connected:
-        print('Unable to connect.')
     # Delay and clear everything in the buffer.
     time.sleep(5)
     port.reset_input_buffer()
@@ -166,12 +158,11 @@ def read_serial(s):
     while (command is not Command.OVER):
         if DEBUG:
             if command in needs_val:
-                val = read_bytes(s)
+                val = read_byte(s)
                 print('%s %d' % (command, val))
             else:
                 print('%s' % (command))
         command = read_command(s)
-    print('%s' % (command)) # delete me, for debugging
 
 
 def main():
@@ -187,7 +178,7 @@ def main():
     '''
     print(cmd_menu)
     exit = False
-    while not exit: #TODO Catch input errors, specifically ValueError for typos.
+    while not exit:  #TODO Catch input errors, specifically ValueError for typos.
         args = input('Enter command: ').split()
         if len(args) == 1:
             if args[0] == 'cmds':
@@ -197,11 +188,11 @@ def main():
                 exit = True
         elif len(args) == 2:
             if args[0] == 'p':
-                motor(float(args[1]))
+                motor(float(args[1]))  #must be within (0.0, 1.0)
             elif args[0] == 'a':
-                steer(int(args[1]))
+                steer(int(args[1]))  #must be within (0, 180)
             elif args[0] == 'r':
-                reverse(bool(args[1]))
+                reverse(int(args[1]))  #must be either 1 or 0
             read_serial(port)
 
 

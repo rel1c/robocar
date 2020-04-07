@@ -96,13 +96,13 @@ void get_command() {
           reverse = read_byte();
           if (DEBUG) {
             write_command(command);
-            write_byte(motor);
+            write_byte(reverse);
           }
           break;
         default:
           write_command(ERROR);
       }  // End of switch
+      write_command(OVER);
     }    // End of connected
-    write_command(OVER);
   }   // End of Serial.available
 }
