@@ -1,6 +1,6 @@
 /* File: controller.cpp
  * Desc: Program that handles car movement and message handling.
- * Copyright (c) 2020 Adam Peterson - All rights reserved
+ * Copyright (c) 2020 Adam Peterson
  */
 
 #include <Arduino.h>
@@ -27,12 +27,12 @@ void setup() {
   while (!connected) {
     write_command(HELLO);
     fill_buffer(1, 1000);
-    get_message();
+    get_command();
   }
 }
 
 void loop() {
-  get_message();
+  get_command();
   execute_command();
 }
 
@@ -65,7 +65,7 @@ void write_byte(byte n) { Serial.write(n); }
 
 void write_command(Command c) { Serial.write(c); }
 
-void get_message() {
+void get_command() {
   if (Serial.available() > 0) {
     Command command = read_command();
     if (!connected) {
@@ -80,23 +80,29 @@ void get_message() {
           break;
         case MOTOR:
           motor = read_byte();
-          write_command(command);
-          write_byte(motor);
+          if (DEBUG) {
+            write_command(command);
+            write_byte(motor);
+          }
           break;
         case STEER:
           steer = read_byte();
-          write_command(command);
-          write_byte(steer);
+          if (DEBUG) {
+            write_command(command);
+            write_byte(steer);
+          }
           break;
         case REVERSE:
           reverse = read_byte();
-          write_command(command);
-          write_byte(motor);
+          if (DEBUG) {
+            write_command(command);
+            write_byte(reverse);
+          }
           break;
         default:
           write_command(ERROR);
       }  // End of switch
+      write_command(OVER);
     }    // End of connected
-    write_command(OVER);
-  }  // End of Serial.available
+  }   // End of Serial.available
 }

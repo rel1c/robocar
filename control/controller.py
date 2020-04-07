@@ -1,20 +1,23 @@
 # File: controller.py
 # Desc: Main controller module for the car.
-# Copyright (c) 2020 Adam Peterson - All rights reserved
+# Copyright (c) 2020 Adam Peterson
 
 import serial
 import time
 import threading
 from parameters import *
-from control import Command, read_byte, read_command, write_serial, parse_command
+from control import Command, read_byte, read_command, write_serial
 
 # Constants
 SERIAL_PATH = '/dev/ttyACM0'
 
 # Init serial
 port = serial.Serial(SERIAL_PATH, BAUD_RATE)
-port.timeout = None
-port.flush()
+
+if DEBUG:
+  port.timeout = None
+else:
+  port.timeout = 1
 
 
 def execute_commands(c, v):
@@ -24,7 +27,7 @@ def execute_commands(c, v):
     @param c: The Command object representing the command to be executed.
     @param v: The integer value.
     """
-    msg = [c, v]
+    msg = [c.value, v]
     write_serial(port, msg)
 
 
@@ -34,7 +37,7 @@ def execute_command(c):
   
     @param c: The Command object representing the command to be executed.
     """
-    write_serial(port, [c])
+    write_serial(port, [c.value])
 
 
 def motor(p):
@@ -47,7 +50,7 @@ def motor(p):
     speed = int(p * MOTOR_MAX)
     if speed < threshold:
         speed = 0
-    execute_commands(Command.MOTOR.value, speed)
+    execute_commands(Command.MOTOR, speed)
 
 
 def steer(a):
@@ -62,7 +65,7 @@ def steer(a):
         angle = STEERING_MAX
     else:
         angle = a
-    execute_commands(Command.STEER.value, angle)
+    execute_commands(Command.STEER, angle)
 
 
 def reverse(r):
@@ -75,13 +78,12 @@ def reverse(r):
         rev = 1
     else:
         rev = 0
-    stop()
-    execute_commands(Command.REVERSE.value, rev)
+    execute_commands(Command.REVERSE, rev)
 
 
 def stop():
     """Stops the motor."""
-    execute_commands(Command.MOTOR.value, 0)
+    execute_commands(Command.MOTOR, 0)
 
 
 def reset():
@@ -97,13 +99,11 @@ def demo():
             print(p, '%')
             motor(per)
             time.sleep(0.25)
-            continue
         for p in range(100, 0, -10):
             per = p / 100
             print(p, '%')
             motor(per)
             time.sleep(0.25)
-            continue
 
     print('Running demo...')
     print('Steering at angle:')
@@ -111,12 +111,10 @@ def demo():
         print(a)
         steer(a)
         time.sleep(0.1)
-        continue
     for a in range(STEERING_MAX, STEERING_MIN, -1):
         print(a)
         steer(a)
         time.sleep(0.1)
-        continue
     print('Returning steering to center...')
     steer(90)
     print('Forward motor...')
@@ -132,20 +130,20 @@ def demo():
 def connect():
     """Attempts to establish serial connection with Arduino."""
     connected = False
-    attempt = 0
-    while (not connected and attempt < 5):
-        print('Connecting...')
-        execute_command(Command.HELLO.value)
-        shake = read_byte(port)
-        if shake in [Command.HELLO.value, Command.OVER.value]:
-            connected = True
-            print('Connection Successful')
+    print('Connecting with Arduino...')
+    while (not connected):
+        if(port.in_waiting > 0):
+            shake = read_command(port)
+            if shake is Command.OVER:
+                connected = True
+                print('Connected!')
         else:
-            time.sleep(1)
-            attempt += 1
-
-    if not connected:
-        print('Connection Failed')
+            time.sleep(0.5)
+            execute_command(Command.HELLO)
+            print('...')
+    # Delay and clear everything in the buffer.
+    time.sleep(5)
+    port.reset_input_buffer()
     return connected
 
 
@@ -155,31 +153,32 @@ def read_serial(s):
 
     @param s: Serial object to be read.
     """
-    while True:
-        command = read_command(port)
-        val = read_byte(port)
-        print('%s %d' % (command, val))
+    needs_val = (Command.MOTOR, Command.STEER, Command.REVERSE)
+    command = read_command(s)
+    while (command is not Command.OVER):
+        if DEBUG:
+            if command in needs_val:
+                val = read_byte(s)
+                print('%s %d' % (command, val))
+            else:
+                print('%s' % (command))
+        command = read_command(s)
 
 
 def main():
     if not connect():
         return
 
-    # non blocking read loop in another thread
-    r_thread = threading.Thread(target=read_serial, args=(port, ))
-    r_thread.daemon = True
-    r_thread.start()
-
     cmd_menu = '''Commands: 
     set motor speed percent --- p <val>
     set steer angle --- a <val>
     reverse --- r <0/1>
     end session --- exit
-    print menu -- cmds
+    print menu --- cmds
     '''
     print(cmd_menu)
     exit = False
-    while not exit:
+    while not exit:  #TODO Catch input errors, specifically ValueError for typos.
         args = input('Enter command: ').split()
         if len(args) == 1:
             if args[0] == 'cmds':
@@ -189,12 +188,12 @@ def main():
                 exit = True
         elif len(args) == 2:
             if args[0] == 'p':
-                motor(float(args[1]))
+                motor(float(args[1]))  #must be within (0.0, 1.0)
             elif args[0] == 'a':
-                steer(int(args[1]))
+                steer(int(args[1]))  #must be within (0, 180)
             elif args[0] == 'r':
-                reverse(bool(args[1]))
-        # time.sleep(0.3)
+                reverse(int(args[1]))  #must be either 1 or 0
+            read_serial(port)
 
 
 if __name__ == '__main__':
