@@ -147,9 +147,9 @@ def connect():
     return connected
 
 
-def read_serial(s):
+def read_serial(s):  #TODO account for 'ERROR'
     """
-    Daemon thread function enabling non-blocking reads
+    Reads a command from serial and prints debugging output to the console. Ignores 'OVER' and 'HELLO'.
 
     @param s: Serial object to be read.
     """
