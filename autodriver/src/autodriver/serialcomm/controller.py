@@ -4,20 +4,16 @@
 
 import serial
 import time
-import threading
-from parameters import *
+import params
 from control import Command, read_byte, read_command, write_serial
 
-# Constants
-SERIAL_PATH = '/dev/ttyACM0'
-
 # Init serial
-port = serial.Serial(SERIAL_PATH, BAUD_RATE)
+port = serial.Serial(params.SERIAL_PATH, params.BAUD_RATE)
 
-if DEBUG:
-  port.timeout = None
+if params.DEBUG:
+    port.timeout = None
 else:
-  port.timeout = 1
+    port.timeout = 1
 
 
 def execute_commands(c, v):
@@ -34,7 +30,7 @@ def execute_commands(c, v):
 def execute_command(c):
     """
     Executes a single control command.
-  
+
     @param c: The Command object representing the command to be executed.
     """
     write_serial(port, [c.value])
@@ -46,8 +42,8 @@ def motor(p):
   
     @param p: A float representing the desired percentage.
     """
-    threshold = MOTOR_MIN
-    speed = int(p * MOTOR_MAX)
+    threshold = params.MOTOR_MIN
+    speed = int(p * params.MOTOR_MAX)
     if speed < threshold:
         speed = 0
     execute_commands(Command.MOTOR, speed)
@@ -59,10 +55,10 @@ def steer(a):
   
     @param a: An integer represening the angle to be set.
     """
-    if a < STEERING_MIN:
-        angle = STEERING_MIN
-    elif a > STEERING_MAX:
-        angle = STEERING_MAX
+    if a < params.STEERING_MIN:
+        angle = params.STEERING_MIN
+    elif a > params.STEERING_MAX:
+        angle = params.STEERING_MAX
     else:
         angle = a
     execute_commands(Command.STEER, angle)
@@ -107,11 +103,11 @@ def demo():
 
     print('Running demo...')
     print('Steering at angle:')
-    for a in range(STEERING_MIN, STEERING_MAX, 1):
+    for a in range(params.STEERING_MIN, params.STEERING_MAX, 1):
         print(a)
         steer(a)
         time.sleep(0.1)
-    for a in range(STEERING_MAX, STEERING_MIN, -1):
+    for a in range(params.STEERING_MAX, params.STEERING_MIN, -1):
         print(a)
         steer(a)
         time.sleep(0.1)
@@ -130,14 +126,16 @@ def demo():
 def connect():
     """Attempts to establish serial connection with Arduino."""
     connected = False
+    attempt = 0
     print('Connecting with Arduino...')
-    while (not connected):
-        if(port.in_waiting > 0):
+    while not connected and attempt < 10:
+        if port.in_waiting > 0:
             shake = read_command(port)
             if shake is Command.OVER:
                 connected = True
                 print('Connected!')
         else:
+            attempt += 1
             time.sleep(0.5)
             execute_command(Command.HELLO)
             print('...')
@@ -147,29 +145,27 @@ def connect():
     return connected
 
 
-def read_serial(s):  #TODO account for 'ERROR'
+def read_serial():  # TODO account for 'ERROR'
     """
     Reads a command from serial and prints debugging output to the console. Ignores 'OVER' and 'HELLO'.
-
-    @param s: Serial object to be read.
     """
     needs_val = (Command.MOTOR, Command.STEER, Command.REVERSE)
-    command = read_command(s)
+    command = read_command(port)
     while (command is not Command.OVER):
-        if DEBUG:
+        if params.DEBUG:
             if command in needs_val:
-                val = read_byte(s)
+                val = read_byte(port)
                 print('%s %d' % (command, val))
             else:
                 print('%s' % (command))
-        command = read_command(s)
+        command = read_command(port)
 
 
 def main():
     if not connect():
         return
 
-    cmd_menu = '''Commands: 
+    cmd_menu = '''Commands:
     set motor speed percent --- p <val>
     set steer angle --- a <val>
     reverse --- r <0/1>
@@ -188,12 +184,12 @@ def main():
                 exit = True
         elif len(args) == 2:
             if args[0] == 'p':
-                motor(float(args[1]))  #must be within (0.0, 1.0)
+                motor(float(args[1]))  # must be within (0.0, 1.0)
             elif args[0] == 'a':
-                steer(int(args[1]))  #must be within (0, 180)
+                steer(int(args[1]))  # must be within (0, 180)
             elif args[0] == 'r':
-                reverse(int(args[1]))  #must be either 1 or 0
-            read_serial(port)
+                reverse(int(args[1]))  # must be either 1 or 0
+            read_serial()
 
 
 if __name__ == '__main__':
