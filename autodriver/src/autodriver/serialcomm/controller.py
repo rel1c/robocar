@@ -5,7 +5,7 @@
 import serial
 import time
 import params
-from control import Command, read_byte, read_command, write_serial
+from control import Command, read_byte, read_command
 
 # Init serial
 port = serial.Serial(params.SERIAL_PATH, params.BAUD_RATE)
@@ -19,12 +19,12 @@ else:
 def execute_commands(c, v):
     """
     Executes a control command with an associated value.
-  
+
     @param c: The Command object representing the command to be executed.
     @param v: The integer value.
     """
     msg = [c.value, v]
-    write_serial(port, msg)
+    port.write(msg)
 
 
 def execute_command(c):
@@ -33,13 +33,13 @@ def execute_command(c):
 
     @param c: The Command object representing the command to be executed.
     """
-    write_serial(port, [c.value])
+    port.write([c.value])
 
 
 def motor(p):
     """
     Sets the motor to a percentage (0.0, 1.0) of its maximum speed.
-  
+
     @param p: A float representing the desired percentage.
     """
     threshold = params.MOTOR_MIN
@@ -52,7 +52,7 @@ def motor(p):
 def steer(a):
     """
     Sets the steering servo to a desired angle within its range.
-  
+
     @param a: An integer represening the angle to be set.
     """
     if a < params.STEERING_MIN:
@@ -67,7 +67,7 @@ def steer(a):
 def reverse(r):
     """
     Reverses the direction of the motor. Stops the motor before changing direction.
-  
+
     @param r: A bool indicating the motor should reverse.
     """
     if r:
@@ -174,7 +174,7 @@ def main():
     '''
     print(cmd_menu)
     exit = False
-    while not exit:  #TODO Catch input errors, specifically ValueError for typos.
+    while not exit:  # TODO Catch input errors, specifically ValueError for typos.
         args = input('Enter command: ').split()
         if len(args) == 1:
             if args[0] == 'cmds':

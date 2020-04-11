@@ -4,9 +4,6 @@
 
 from enum import Enum
 
-# Constants
-ENDIAN = 'little'
-
 
 # Control commands
 class Command(Enum):
@@ -22,7 +19,7 @@ class Command(Enum):
 
     def __repr__(self):
         return self.name + ':' + str(self.value)
-    
+
     def __str__(self):
         return self.name
 
@@ -35,13 +32,13 @@ def read_byte(s):
     @returns: Byte received from serial.
     """
     b = s.read(1)
-    return int.from_bytes(b, byteorder=ENDIAN, signed=False)
+    return ord(b)
 
 
 def read_command(s):
     """
     Read in one byte from serial, and return it as a Command object.
-  
+
     @param s: Serial object to be read.
     @returns: Command object received from serial.
     @throws: ValueError in case byte is not a Command value.
@@ -49,17 +46,6 @@ def read_command(s):
     values = tuple(c.value for c in Command)
     b = read_byte(s)
     if b in values:
-      return Command(b)
+        return Command(b)
     else:
-      raise ValueError('Byte value (%d) read is not a Command.' % b)
-
-
-def write_serial(s, msg):
-    """
-    Write a list of bytes to serial.
-  
-    @param s: Serial object to be written.
-    @param msg: List of bytes to be written to serial.
-    """
-    m = bytes(msg)
-    s.write(m)
+        raise ValueError('Byte value (%d) read is not a Command.' % b)

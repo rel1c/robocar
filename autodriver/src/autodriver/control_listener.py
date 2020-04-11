@@ -9,8 +9,10 @@ def callback(data):
                   (data.motor_pct, data.heading, data.reverse))
     # implement only updating fields that have changed
     # maybe wrap these three function calls into a parent helper function in controller.py
-    driver.motor(data.motor)
+    driver.motor(data.motor_pct)
+    driver.read_serial()
     driver.steer(data.heading)
+    driver.read_serial()
     driver.reverse(data.reverse)
     driver.read_serial()
 
