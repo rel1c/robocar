@@ -8,7 +8,7 @@
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
   <maintainer email="samboldon@gmail.com">Sam Boldon</maintainer>
-  <maintainer email="idontknowthiswillask@idk.com">Adam Peterson</maintainer>
+  <maintainer email="ajay2828@gmail.com">Adam Peterson</maintainer>
   
   <license>MIT</license>
 
@@ -18,7 +18,7 @@
   <!-- <url type="website">http://wiki.ros.org/autodriver</url> -->
 
   <author email="samboldon@gmail.com">Sam Boldon</author>
-  <author email="seeabovepls@lovethatthisisrequiredtocompile.com">Adam Peterson</author>
+  <author email="ajay2828@gmail.com">Adam Peterson</author>
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>
