@@ -19,26 +19,6 @@ rawCapture = PiRGBArray(camera, size=(WIDTH, HEIGHT))
 # allow the camera to warmup
 time.sleep(0.1)
 
-# draw lanes on image with respect to a specific origin
-def draw_lanes(img, lanes, x, y):
-  #draw lines on blank image and then combine with base image
-  img_line = np.zeros_like(img)
-  for lane in lanes:
-    if lane is not None:
-      print('lane line: ', lane)
-      (x1, y1), (x2, y2) = lane
-      cv2.line(img_line, (x1+x, y1+y), (x2+x, y2+y), (0, 0, 255), 2)
-  return cv2.addWeighted(img, 1.0, img_line, 0.95, 0.0)
-
-
-# process a ROI in the image for line finding
-def process_roi(img, x1, y1, x2, y2):  
-  roi = img[y1:y2, x1:x2]
-  roi_gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY) #convert the image into black and white colorspace
-  roi_blur = cv2.GaussianBlur(roi_gray, (9, 9), 0) #blur the image to cut out noise
-  roi_thresh = cv2.threshold(roi_blur, 210, 255, cv2.THRESH_BINARY)[1]
-  return roi_thresh
-
 
 # adjust gamma of an image
 def adjust_gamma(img, gamma=1.0):
@@ -63,17 +43,16 @@ def process_image(img):
 
 # apply a probabilistic Hough transform to an image
 def find_lines(img):
-  return cv2.HoughLinesP(img, 1, np.pi/180, 65, minLineLength=0, maxLineGap=5)
+  return cv2.HoughLinesP(img, 1, np.pi/180, 55, minLineLength=40, maxLineGap=5)
 
 
 # draw found lines on image
-def draw_lines(img, lines):
+def draw_lines(img, lines, x, y, color=(0, 0, 255)):
   if lines is not None:
     for line in lines:
       x1, y1, x2, y2 = line[0]
-      cv2.line(img, (x1, y1), (x2, y2), (0, 255, 0), 1)
+      cv2.line(img, (x1+x, y1+y), (x2+x, y2+y), color, 1)
   return img
-
 
 
 # find the average slope, intercept and magnitude for each line
@@ -131,9 +110,15 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
   # process image as to isolate lane markings
   img_proc = process_image(img)
 
-  # find lines in image
-  lines = find_lines(img_proc)
-  img_line = draw_lines(img, lines)
+  # define a left and right ROI for the car
+  roi_l = img_proc[0:HEIGHT, 0:WIDTH/2]
+  roi_r = img_proc[0:HEIGHT, WIDTH/2:WIDTH]
+
+  # find lines in each ROI
+  lines_l = find_lines(roi_l)
+  lines_r = find_lines(roi_r)
+  img_line = draw_lines(img, lines_l, 0, 0)
+  img_line = draw_lines(img, lines_r, WIDTH/2, 0, (0, 255, 0))
 
   # show the frame
   cv2.imshow("Processed", img_proc)
