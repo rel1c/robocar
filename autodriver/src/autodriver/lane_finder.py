@@ -3,33 +3,29 @@ import cv2
 import rospy
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
+from models.ros_subscriber import ROSSubscriber
 
 
-class LaneFinder:
-    """
-    Subscribes to ROS Image messages on topic.
-    Converts messages to OpenCV image data for lane detection.
-    """
+class LaneFinder(ROSSubscriber):
+    def __init__(self, name, topic):
+        super(LaneFinder, self).__init__(name, topic, Image)
+        self.converter = CvBridge()
 
-    def __init__(self, topic):
-        self._listener = rospy.Subscriber(topic, Image, self.callback)
-        self._bridge = CvBridge()
+    def start(self):
+        super(LaneFinder, self).start()
 
     def callback(self, data):
         try:
-            image = self._bridge.imgmsg_to_cv2(data, 'bgr8')
+            image = self.converter.imgmsg_to_cv2(data, 'bgr8')
             rospy.loginfo('Img received')
-            cv2.imshow("Frame", image)
-            cv2.waitKey(0)
+            # cv2.imshow("Frame", image)
+            # cv2.waitKey(0)
+
         except CvBridgeError as e:
-            rospy.logerr('LaneFinder error: %s', e)
-
-
-def init():
-    finder = LaneFinder('image_data')
-    rospy.init_node('lane_finder')
-    rospy.spin()
+            rospy.logerr('Lane Finder error: %s', e)
+            # figure out how to exit from node (can't just call return)
 
 
 if __name__ == '__main__':
-    init()
+    subscriber = LaneFinder('lane_finder', 'image_data')
+    subscriber.start()
