@@ -5,49 +5,44 @@ from picamera import PiCamera
 import rospy
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
+from models.ros_publisher import ROSPublisher
 
 
-class ImageCapture:
-    """
-    Captures and converts openCV image data to ROS Image messages.
-    Publishes on topic with a frequency of frame_rate.
-    """
+class ImageCapture(ROSPublisher):
+    """Captures and converts openCV image data to ROS Image messages."""
 
-    def __init__(self, topic, width, height, frame_rate=32, rotation=180):
-        self.camera = PiCamera()
-        self.camera.resolution = (width, height)
-        self._sender = rospy.Publisher(topic, Image, queue_size=frame_rate)
-        self._bridge = CvBridge()
+    def __init__(self, name, topic, width, height, frame_rate=32, rotation=180):
+        super(ImageCapture, self).__init__(name, topic, Image, frame_rate)
+        self.lens = PiCamera(resolution=(width, height), framerate=frame_rate)
+        self.lens.rotation = rotation
+        self.converter = CvBridge()
+
+    def start(self):
+        super(ImageCapture, self).start()
+
+    def publish(self):
+        raw = PiRGBArray(self.lens, size=self.lens.resolution)
+
+        while not rospy.is_shutdown():
+            for frame in self.lens.capture_continuous(raw, format='bgr', use_video_port=True):
+                # grab numpy representation of image, initialize the timestamp and occupied/unoccupied text
+                image = frame.array
+                msg = self.converter.cv2_to_imgmsg(image, 'bgr8')
+                try:
+                    self.sender.publish(msg)
+                except CvBridgeError as e:
+                    rospy.logerr('Image Capture error: %s', e)
+                    # figure out how to exit from node (can't just call return)
+
+                # clear stream for next frame
+                raw.truncate(0)
 
     def __del__(self):
-        self.camera.close()
-
-    def take_snapshot(self):
-        raw = PiRGBArray(self.camera, size=self.camera.resolution)
-
-        for frame in self.camera.capture_continuous(raw, format='bgr', use_video_port=True):
-            # grab the raw NumPy array representing the image, then initialize the timestamp
-            # and occupied/unoccupied text
-            image = frame.array
-            msg = self._bridge.cv2_to_imgmsg(image, 'bgr8')
-            try:
-                self._sender.publish(msg)
-            except CvBridgeError as e:
-                rospy.logerr('Image Capture error: %s', e)
-
-            # clear the stream in preparation for the next frame
-            raw.truncate(0)
-
-
-def init():
-    camera = ImageCapture('image_data', 320, 240)
-    rospy.init_node('image_capture')
-    while not rospy.is_shutdown():
-        camera.take_snapshot()
+        self.lens.close()
 
 
 if __name__ == '__main__':
-    try:
-        init()
-    except rospy.ROSInterruptException:
-        pass
+    camera = ImageCapture('image_capture', 'image_data', 320, 240)
+    rospy.loginfo('Image capture started')
+    camera.start()
+    camera.publish()

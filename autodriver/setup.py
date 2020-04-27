@@ -4,7 +4,7 @@ from distutils.core import setup
 from catkin_pkg.python_setup import generate_distutils_setup
 
 setup_args = generate_distutils_setup(
-    packages=['autodriver', 'autodriver.serialcomm'],
+    packages=['autodriver', 'autodriver.serialcomm', 'autodriver.models'],
     package_dir={'': 'src'},
 )
 
