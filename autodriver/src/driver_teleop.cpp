@@ -77,17 +77,17 @@ int main(int argc, char *argv[]) {
         break;
 
       case KEY_LEFT:
-        if (msg.heading - TURN_ANGLE >= STEER_MIN) msg.heading -= TURN_ANGLE;
-        else msg.heading = STEER_MIN;
-        control_stream.publish(msg);
-        break;
-
-      case KEY_RIGHT:
         if (msg.heading + TURN_ANGLE <= STEER_MAX) msg.heading += TURN_ANGLE;
         else msg.heading = STEER_MAX;
         control_stream.publish(msg);
         break;
 
+      case KEY_RIGHT:
+        if (msg.heading - TURN_ANGLE >= STEER_MIN) msg.heading -= TURN_ANGLE;
+        else msg.heading = STEER_MIN;
+        control_stream.publish(msg);
+        break;
+   
       case KEY_QUIT:
         init_state(msg);
         control_stream.publish(msg);
