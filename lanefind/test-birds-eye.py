@@ -5,6 +5,9 @@ import time
 import cv2
 import numpy as np #need for Hough transform
 
+# debug param MOVE THIS
+DEBUG = True
+
 # resolution
 WIDTH = 640
 HEIGHT = 480
@@ -61,58 +64,37 @@ def isolate_blue(img):
   # return a binary image
   return img_proc
 
+# minimize found lanes to small lines
+def erode_image(img):
+  kernel = np.ones((3,3), np.uint8)
+  img_erode = cv2.erode(img, kernel, iterations=5)
+  return img_erode
+
 # find lines in image using probabilistic Hough transform
 def find_lines(img):
-  return cv2.HoughLinesP(img, 1, np.pi/180, 55, minLineLength = 50, maxLineGap = 10)
+  return cv2.HoughLines(img, 1, np.pi/180, 45)
 
-# draw found lines on image
-def draw_lines(img, lines, x, y, color=(0, 0, 255)):
-  if lines is not None:
-    for line in lines:
-      x1, y1, x2, y2 = line[0]
-      cv2.line(img, (x1+x, y1+y), (x2+x, y2+y), color, 2)
+# draw found line on image
+def draw_line(img, line):
+  color = (255, 200, 100)
+  rho, theta = line
+  a = np.cos(theta)
+  b = np.sin(theta)
+  x0 = a*rho
+  y0 = b*rho
+  x1 = int(x0 + 1000*(-b))
+  y1 = int(y0 + 1000*(a))
+  x2 = int(x0 - 1000*(-b))
+  y2 = int(y0 - 1000*(a))
+  cv2.line(img, (x1, y1), (x2, y2), color, 2)
   return img
 
-# find the average slope, intercept for a set of lines
-def avg_slop_intercept(lines):
-  #init lists
-  acc = []
-  mag = []
-  #compute values
-  for line in lines:
-    x1, y1, x2, y2 = line[0]
-    if x1 == x2:
-      continue #ignore all horizontal lines
-    a = ((y2 - y1) / float(x2 - x1))
-    b = (y1 - a * x1)
-    magnitude = np.sqrt((y2 - y1)**2 + (x2 - x1)**2)
-    if a != 0:
-      acc.append((a, b))
-      mag.append((magnitude))
-  avg = np.dot(mag, acc) / np.sum(mag) if len(mag) > 0 else None
-  return avg
-
-# convert a slope and intercept into a tuple of start and end points
-def slope_to_points(line, y1=0, y2=HEIGHT):
-  if line is None:
-    return 0, 0, 1, 1
-  #else
-  a, b = line
-  x1 = int((y1 - b) / a)
-  x2 = int((y2 - b) / a)
-  y1 = int(y1)
-  y2 = int(y2)
-  return x1, y1, x2, y2
-
-# find the most confident steering angle from a the average slope and intercept
-# of a set of lines. if there are no lines, the default is to point forward at
-# 90 degress
-def get_steer_angle(line):
-  if line is None:
-    return 90
-  else:
-    inter, theta = line
-    return theta
+def draw_lines(img, lines):
+  if lines is not None:
+    print len(lines)
+    for line in lines[0]:
+      img = draw_line(img, line)
+  return img
 
 def birds_eye_view(img):
   #points in camera view, corresponding to empirical observation
@@ -140,26 +122,21 @@ def main():
     # isolate blue areas in the bottom half of the transformed image
     img_half = img_birds[HEIGHT/2:HEIGHT, 0:WIDTH]
     img_blues = isolate_blue(img_half)
+    img_erode = erode_image(img_blues)
 
     # find lines in ROI
-    lines = find_lines(img_blues)
+    lines = find_lines(img_erode)
 
-    # draw average lines on bird's eye view image
-    img_lines = draw_lines(img_birds, lines, 0, HEIGHT/2, (255, 0, 0))
-
-    # show the frame
-    cv2.imshow("Image", image)
-    cv2.imshow("Lines", img_lines)
-
-    #cv2.imshow("Processed", img_thresh)
-    key = cv2.waitKey(1) & 0xFF #display the stream for 1ms and capture any key input as a character
+    if DEBUG:
+      # draw Hough lines on bird's eye view image
+      img_lines = draw_lines(img_erode, lines)
+      # show the frame
+      #cv2.imshow("Image", image)
+      cv2.imshow("Isolated", img_erode)
+      cv2.waitKey(1)
   
     # clear the stream in preparation for the next frame
     rawCapture.truncate(0)
-  
-    # if the `q` key was pressed, break from the loop
-    if key == ord("q"):
-      break
 
 if __name__ == '__main__':
   main()
