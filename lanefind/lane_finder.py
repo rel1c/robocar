@@ -5,44 +5,21 @@ import time
 import cv2
 import numpy as np #need for Hough transform
 
-# debug param MOVE THIS
+# debug param used for viewing
 DEBUG = True
 
 # resolution
 WIDTH = 640
 HEIGHT = 480
 
-# initialize the camera and grab a reference to the raw camera capture
+# initialize the camera and raw capture
 camera = PiCamera()
 camera.resolution = (WIDTH, HEIGHT)
 camera.framerate = 32
 camera.rotation = 180
 rawCapture = PiRGBArray(camera, size=(WIDTH, HEIGHT))
 
-# define a polygon for image transform
-# polygon is based on a 17" x 12" rectangle
-TOP_L = (188, 171)
-TOP_R = (452, 171)
-BOT_L = (23, 374)
-BOT_R = (617, 374)
-
-# draw a crosshair to aid in centering image
-def draw_crosshair(img):
-  color = (0, 0, 255)
-  img_horizontal = cv2.line(img, (0, HEIGHT/2), (WIDTH, HEIGHT/2), color, 1)
-  img_vertical = cv2.line(img_horizontal, (WIDTH,2, 0), (WIDTH/2, HEIGHT), color, 1)
-  return img_vertical
-
-# draw a polygon based on empirical measurements
-def draw_base_polygon(img):
-  color = (100, 255, 255)
-  img_up = cv2.line(img, TOP_L, TOP_R, color, 1)
-  img_down = cv2.line(img_up, BOT_L, BOT_R, color, 1)
-  img_left = cv2.line(img_down, TOP_L, BOT_L, color, 1)
-  img_right = cv2.line(img_left, TOP_R, BOT_R, color, 1)
-  return img_right
-
-# adjust the gamma of an image
+# adjust the gamma of the image
 def adjust_gamma(img, gamma=1.0):
   gamma_inv = 1.0/gamma
   table = np.array([
@@ -70,7 +47,7 @@ def erode_image(img):
   img_erode = cv2.erode(img, kernel, iterations=5)
   return img_erode
 
-# apply a probabilistic Hough transform to an image
+# apply a probabilistic Hough transform to the image
 def find_lines(img):
   return cv2.HoughLinesP(img, 1, np.pi/180, 55, minLineLength=50, maxLineGap=5)
 
@@ -82,46 +59,30 @@ def draw_lines(img, lines, x, y, color=(0, 0, 255)):
       cv2.line(img, (x1+x, y1+y), (x2+x, y2+y), color, 2)
   return img
 
-# find the average angle based on the weighted average of found lines
+# find the average angle based on the average slope of lines
 def average_angle(lines):
-  # by default go forward
-  if lines is None:
-    print 'no lines detected'
+  # by default go forward, not sure how else to approach this
+  if lines is None: 
+    #TODO log errors, should stop motor if this exceeds a threshold
+    print 'no lines detected'    
     return 90
   slopes = []
-  print len(lines)
   for line in lines:
     x1, y1, x2, y2 = line[0]
     if x1 != x2:
       slope = ((y2 - y1) / float(x2 - x1))
       slopes.append(slope)
+      # TODO either log or disregard
       print 'x1:', x1, 'x2:', x2, 'y1:', y1, 'y2:', y2
   slope_avg = np.sum(slopes) / len(slopes)
-  print 'average slope:', slope_avg
   angle = np.arctan(slope_avg) * 180/np.pi
   # correct for change in coordinate system
   if (angle < 0):
     angle = angle * -1
   else:
     angle = 180 - angle
-  print 'angle:', angle
-
-# convert a slope and intercept into a tuple of start and end points
-def slope_to_points(line, y1=0, y2=HEIGHT):
-  if line is None:
-    return 0, 0, 1, 1
-  #else
-  a, b = line
-  x1 = int((y1 - b) / a)
-  x2 = int((y2 - b) / a)
-  y1 = int(y1)
-  y2 = int(y2)
-  return x1, y1, x2, y2
-
-# find the average line from a set of lines
-def avg_line(lines):
-  avg = avg_slop_intercept(lines)
-  return slope_to_points(avg)
+  print 'angle:', angle #TODO log this angle, for steering servo
+  return angle
 
 def birds_eye_view(img):
   #points in camera view, corresponding to empirical observation
@@ -154,15 +115,16 @@ def main():
     # find lines in ROI
     lines = find_lines(img_erode)
 
+    # find average angle from lines
+    angle = average_angle(lines)
+
     if DEBUG:
       # draw Hough lines on bird's eye view image
       img_lines = draw_lines(img_birds, lines, 0, HEIGHT/2)
-      average_angle(lines)
       # show the frame
-      #cv2.imshow("Image", image)
-      #cv2.imshow("Isolated", img_erode)
-      cv2.imshow("Birds Eye", img_birds)
-      cv2.waitKey(1)
+      cv2.imshow("Camera View", image)
+      cv2.imshow("Bird's Eye View with Lane Lines", img_birds)
+      cv2.waitKey(1) #required to display images, use Ctrl+C to quit
   
     # clear the stream in preparation for the next frame
     rawCapture.truncate(0)
