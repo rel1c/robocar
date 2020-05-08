@@ -80,19 +80,15 @@ def avg_slop_intercept(lines):
   mag = []
   #compute values
   for line in lines:
-    print('line:', line)#DEBUG---!
     x1, y1, x2, y2 = line[0]
     if x1 == x2:
       continue #ignore all horizontal lines
     a = ((y2 - y1) / float(x2 - x1))
     b = (y1 - a * x1)
-    print('atype:', type(a), 'btype:', type(b)) #DEBUG---!
     magnitude = np.sqrt((y2 - y1)**2 + (x2 - x1)**2)
-    print('a =', a, 'a == 0:', (a == 0))#DEBUG---!
     if a != 0:
       acc.append((a, b))
       mag.append((magnitude))
-  print('mag:', mag)#DEBUG---!
   avg = np.dot(mag, acc) / np.sum(mag) if len(mag) > 0 else None
   return avg
 
@@ -108,10 +104,15 @@ def slope_to_points(line, y1=0, y2=HEIGHT):
   y2 = int(y2)
   return x1, y1, x2, y2
 
-# find the average line from a set of lines
-def avg_line(lines):
-  avg = avg_slop_intercept(lines)
-  return slope_to_points(avg)
+# find the most confident steering angle from a the average slope and intercept
+# of a set of lines. if there are no lines, the default is to point forward at
+# 90 degress
+def get_steer_angle(line):
+  if line is None:
+    return 90
+  else:
+    inter, theta = line
+    return theta
 
 def birds_eye_view(img):
   #points in camera view, corresponding to empirical observation
