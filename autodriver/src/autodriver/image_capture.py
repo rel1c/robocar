@@ -15,34 +15,32 @@ class ImageCapture(ROSPublisher):
         super(ImageCapture, self).__init__(name, topic, Image, frame_rate)
         self.lens = PiCamera(resolution=(width, height), framerate=frame_rate)
         self.lens.rotation = rotation
-        self.converter = CvBridge()
+        self._raw = PiRGBArray(self.lens, size=self.lens.resolution)
+        self._converter = CvBridge()
 
-    def start(self):
-        super(ImageCapture, self).start()
+    def start_node(self):
+        super(ImageCapture, self).start_node()
+
+    def _cleanup(self):
+        super(ImageCapture, self)._cleanup()
+        self.lens.close()
 
     def publish(self):
-        raw = PiRGBArray(self.lens, size=self.lens.resolution)
-
         while not rospy.is_shutdown():
-            for frame in self.lens.capture_continuous(raw, format='bgr', use_video_port=True):
-                # grab numpy representation of image, initialize the timestamp and occupied/unoccupied text
-                image = frame.array
-                msg = self.converter.cv2_to_imgmsg(image, 'bgr8')
-                try:
-                    self.sender.publish(msg)
-                except CvBridgeError as e:
-                    rospy.logerr('Image Capture error: %s', e)
-                    # figure out how to exit from node (can't just call return)
-
-                # clear stream for next frame
-                raw.truncate(0)
-
-    def __del__(self):
-        self.lens.close()
+            self.lens.capture(self._raw, format='bgr', use_video_port=True)
+            image = self._raw.array
+            msg = self._converter.cv2_to_imgmsg(image, 'bgr8')
+            try:
+                # publish up to frame_rate msgs/sec
+                self._sender.publish(msg)
+            except CvBridgeError as e:
+                rospy.logerr('Image Capture error: %s', e)
+                break
+            # clear stream for next frame
+            self._raw.truncate(0)
 
 
 if __name__ == '__main__':
     camera = ImageCapture('image_capture', 'image_data', 320, 240)
-    rospy.loginfo('Image capture started')
-    camera.start()
+    camera.start_node()
     camera.publish()

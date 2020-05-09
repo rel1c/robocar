@@ -7,5 +7,10 @@ class ROSNode(object):
     def __init__(self, name):
         self.name = name
 
-    def start(self):
+    def start_node(self):
         rospy.init_node(self.name)
+        rospy.loginfo('%s started', self.name)
+        rospy.on_shutdown(self._cleanup)
+
+    def _cleanup(self):
+        rospy.loginfo('%s ended', self.name)
