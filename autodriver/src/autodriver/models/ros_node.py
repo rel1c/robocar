@@ -5,6 +5,9 @@ class ROSNode(object):
     """ A base class for all ROS Nodes."""
 
     def __init__(self, name):
+        # disallow duplicate creation of a node
+        if hasattr(self, 'name'):
+            return
         self.name = name
 
     def start_node(self):

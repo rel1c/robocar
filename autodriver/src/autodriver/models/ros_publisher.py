@@ -13,5 +13,5 @@ class ROSPublisher(ROSNode):
         self._sender = rospy.Publisher(topic, msg_type, queue_size=q_size)
 
     @abstractmethod
-    def publish(self):
+    def publish(self, arg=None):
         pass

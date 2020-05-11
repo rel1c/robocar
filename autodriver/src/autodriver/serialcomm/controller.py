@@ -6,6 +6,7 @@ import serial
 import time
 import params
 from control import Command, read_byte, read_command
+from autodriver.models.exceptions import ConnectionError
 
 # Init serial
 port = serial.Serial(params.SERIAL_PATH, params.BAUD_RATE)
@@ -142,7 +143,8 @@ def connect():
     # Delay and clear everything in the buffer.
     time.sleep(5)
     port.reset_input_buffer()
-    return connected
+    if not connected:
+        raise ConnectionError('Unable to initialize serial communication')
 
 
 def read_serial():  # TODO account for 'ERROR'
@@ -159,38 +161,3 @@ def read_serial():  # TODO account for 'ERROR'
             else:
                 print('%s' % (command))
         command = read_command(port)
-
-
-def main():
-    if not connect():
-        return
-
-    cmd_menu = '''Commands:
-    set motor speed percent --- p <val>
-    set steer angle --- a <val>
-    reverse --- r <0/1>
-    end session --- exit
-    print menu --- cmds
-    '''
-    print(cmd_menu)
-    exit = False
-    while not exit:  # TODO Catch input errors, specifically ValueError for typos.
-        args = input('Enter command: ').split()
-        if len(args) == 1:
-            if args[0] == 'cmds':
-                print(cmd_menu)
-            elif args[0] == 'exit':
-                reset()
-                exit = True
-        elif len(args) == 2:
-            if args[0] == 'p':
-                motor(float(args[1]))  # must be within (0.0, 1.0)
-            elif args[0] == 'a':
-                steer(int(args[1]))  # must be within (0, 180)
-            elif args[0] == 'r':
-                reverse(int(args[1]))  # must be either 1 or 0
-            read_serial()
-
-
-if __name__ == '__main__':
-    main()

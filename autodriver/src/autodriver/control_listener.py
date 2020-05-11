@@ -1,14 +1,11 @@
 #!/usr/bin/env python
-from enum import Enum
 import rospy
-from models.ros_subscriber import ROSSubscriber
+import threading
+from enum import Enum
 import autodriver.serialcomm.controller as driver
 from autodriver.msg import ControlState
-
-
-class ConnectionError(RuntimeError):
-    def __init__(self, arg):
-        self.args = arg
+from models.exceptions import ConnectionError
+from models.ros_subscriber import ROSSubscriber
 
 
 class DriveState(Enum):
@@ -27,19 +24,21 @@ class ControlListener(ROSSubscriber):
         self._state = [0.0, 90, 0]
 
     def start_node(self):
-        if not driver.connect():
-            raise ConnectionError('Arduino connection failed')
+        # ConnectionError raised on failure
+        driver.connect()
         super(ControlListener, self).start_node()
 
     def _cleanup(self):
         super(ControlListener, self)._cleanup()
-        driver.reset()
+        async_closer = threading.Thread(target=driver.reset)
+        async_closer.start()
+        async_closer.join()
 
     def _set_state(self, typeof, new_state, action):
         if new_state != self._state[typeof.value]:
             self._state[typeof.value] = new_state
             action(new_state)
-            driver.read_serial()
+            # driver.read_serial()
 
     def _callback(self, data):
         rospy.loginfo('motor percent: %f, heading: %d, reverse: %d',
@@ -54,4 +53,4 @@ if __name__ == '__main__':
     try:
         command_handler.start_node()
     except ConnectionError as e:
-        rospy.logerr('%s', e)
+        rospy.logerr('Connecction error: %s', e)

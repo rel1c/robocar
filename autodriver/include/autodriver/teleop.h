@@ -12,7 +12,7 @@
 #define KEY_QUIT 0x71
 
 // number of speed levels
-#define NUM_SPD_INTRVL 5
+#define NUM_SPD_INTRVL 10
 // speed level -> percentage of motor use
 #define SET_MOTOR_PCT(x) (float)abs(x) / float(NUM_SPD_INTRVL)
 

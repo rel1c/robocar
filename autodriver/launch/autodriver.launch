@@ -1,0 +1,5 @@
+<launch>
+  <node name="control_listener" pkg="autodriver" type="control_listener.py" output="screen"/>
+  <node name="lane_finder" pkg="autodriver" type="lane_finder.py" ouput="screen"/>
+  <node name="image_capture" pkg="autodriver" type="image_capture.py" output="screen"/>
+</launch>
