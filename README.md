@@ -1,12 +1,5 @@
 # Autonomous Racecar
 
-Table of Contents
-=================
-
-- [About](#about)
-- [Equipment](#equipment)
-- [License](#license)
-
 ### About
 
 This project originally started as an assignment for the class CSci 5551
@@ -39,9 +32,4 @@ new perspective and knowledge of the problem's domain.
   field of view and it was too restrictive to be useful.
 - The Pi is powered with a portable 5000mAh USB battery. They are all over eBay for around $10.
 
-### License
-
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
-**[MIT license](http://opensource.org/licenses/mit-license.php)**
-
-Copyright © 2021 Adam Peterson
