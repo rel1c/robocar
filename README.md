@@ -1,78 +1,47 @@
-# Spring 2020 CSci 5551 Robotic Car Project
-
-Autonomous racetrack-navigating robotic car project, designed and built for the University of
-Minnesota Spring 2020 CSci 5551 class.
+# Autonomous Racecar
 
 Table of Contents
 =================
 
-- [Concept](#concept)
-- [Execution](#execution)
+- [About](#about)
 - [Equipment](#equipment)
-- [Progress](#progress)
-- [Challenges](https://github.com/rel1c/robocar/blob/master/challenges.md)
-- [FAQ](#faq)
 - [License](#license)
 
-### Concept
+### About
 
-For our project we intend to program a robotic race car that can autonomously navigate a racetrack.
-We plan for the track lane to be defined by a high contrast inner and outer edge, either visually
-or physically constructed. The track will not be statically designed, but instead able to be
-redesigned in any configuration given that it forms a complete loop with no intersections.
+This project originally started as an assignment for the class CSci 5551
+Introdution to Intelligent Robotic Systems at the University of Minnesota
+during the Spring semester of 2020. Rather than taking a final, students are
+encouraged to solve a problem of their choosing with Robot Operating System
+([ROS](https://www.ros.org)). My class partner and I chose to design and build
+a racetrack navigating robot by starting with a RC car, a Raspberry Pi and a
+camera, among other things. Our previous attempt is preserved on this
+repository, but now abandoned. Long story short, we were stymied by a lack of
+knowledge in both the artificial intelligence and electrical engineering
+fields.
 
-The car is equipped with a camera in order to see the track, and it will be programmed how to infer
-which side of the track is the outer and inner edge, along with what it means to complete a lap on
-said track.
-
-![fig_a](images/fig_a.png) ![fig_b](images/fig_b.png)
-
-### Execution
-
-At the bare minimum we intend to accomplish the navigation of a simple racetrack where the track
-configuration is not hard coded. From there on we would like to achieve a scenario where the robot
-is able to navigate a more complex track configuration. If all goes well, we intend on using
-machine learning and a set of heuristics to aid the robot in pushing the boundaries of navigation
-in order to accomplish faster lap times until an optimal is reached.
-
-![fig_c](images/fig_c.png)
+I am now attempting to restore this project to its former glory with a
+new perspective and knowledge of the problem's domain.
 
 ### Equipment
 
-- The race car is built upon a hobbyist remote control car chassis, specifically a
+- The race car is built upon a hobbyist remote control car chassis, specifically a 1/18 scale 
   [Horizon Hobby ECX Torment](https://www.horizonhobby.com/ECX01001T1).
-- Upon the chassis is an [Arduino Uno](https://www.arduino.cc/en/Guide/ArduinoUno) and a [Raspberry 
-  Pi 3 Model B](https://www.raspberrypi.org/products/raspberry-pi-3-model-b/).
-- The motor is powered by a 7.2V LiPo battery and is controlled by a [Cytron 10A DC Motor Driver
-  Shield for Arduino](https://www.cytron.io/p-10amp-7v-30v-dc-motor-driver-shield-for-arduino).
-- Steering is controlled by a [Spektrum S401 Mini Servo](
-  https://www.spektrumrc.com/Products/Default.aspx?ProdID=SPMS401) that came stock with the car.
-- Computer power is supplied by a [Jackery Titan](https://www.jackery.com/), an 18,000mAh external
-  battery with USB connections.
-- The camera is an [Arducam 5MP Mini Camera](https://www.arducam.com/product/arducam-ov5647-standard-raspberry-pi-camera-b0033/).
-
-### Progress
-
-- [x] Serial communication between the Arduino and the Pi.
-- [x] Communication between the Pi and a PC.
-- [x] Manual control of the car over Wi-Fi.
-- [x] Track identification from captured images.
-- [ ] Navigation of a simple oval track.
-- [ ] Navigation of a complex, twisting track.
-- [ ] Lap time optimization and tuning.
-
----
-
-### FAQ
-
-Is this crazy enough to work?
-> I sure hope so!
-
----
+- For a computer, I am currently using a 
+  [Raspberry Pi 3 Model B](https://www.raspberrypi.org/products/raspberry-pi-3-model-b/).
+- The steering servo and wheel motor are powered by a standard, RC 7.2V LiPo battery.
+- Rather than the stock ESC, I'm using an easily sourced
+  [Hobbywing QuicRun 1060](http://hobbywing.com/goods.php?id=358). which communicates with
+  the Pi through a [PCA9685 Servo Driver](https://www.adafruit.com/product/815) to control
+  both the steering servo and wheel motor.
+- The camera is an [Arducam 5MP Fisheye with M12 Lens](https://www.amazon.com/gp/product/B013JWEGJQ),
+  which was chosen for its wide field of view. Previously I had used a camera with a much narrower
+  field of view and it was too restrictive to be useful.
+- The Pi is powered with a portable 5000mAh USB battery. They are all over eBay for around $10.
 
 ### License
 
-Copyright © 2020 Adam Peterson & Samuel Boldon
-
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
 **[MIT license](http://opensource.org/licenses/mit-license.php)**
+
+Copyright © 2021 Adam Peterson
